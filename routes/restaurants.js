@@ -5,6 +5,13 @@ const router = express.Router();
 // Create a new restaurant
 router.post('/', async (req, res) => {
     try {
+        // Check for duplicate restaurant
+        const { name, address, telephone } = req.body;
+        const existingRestaurant = await Restaurant.findOne({ name, address, telephone });
+        if (existingRestaurant) {
+            return res.status(400).send({ error: 'Already exists' });
+        }
+
         const restaurant = new Restaurant(req.body);
         await restaurant.save();
         res.status(201).send(restaurant);
